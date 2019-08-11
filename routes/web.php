@@ -11,11 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/admin', 'PagesController@admin');
+// Route::get('/admin', 'PagesController@admin');
 
 Route::resource('users', 'UsersController');
 Auth::routes();
