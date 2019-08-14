@@ -129,17 +129,16 @@
 </head>
 
 <body>
-    <a href="/users" class="btn btn-default">Go Back</a>
     <div class="container">
         <div class="table-wrapper">
                 <div class="col-sm-8">
-                        <h2>{{$admin->name}} Users Managment</h2>
+                        <h2>Admins Managment</h2>
                     </div>
             <div class="table-title">
                     
                 <div class="row">
                  
-            {!! Form::open(['route' => ['users.createChild', $admin->id], 'method' => 'POST']) !!}
+            {!! Form::open(['action' => 'UsersController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
             <table class="table table-bordered">
                 <tr>
                     <td>
@@ -159,19 +158,19 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>User name</th>
-                        <th>User email</th>
+                        <th>Admin name</th>
+                        <th>Admin email</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if(count($users)>0)
-                    @foreach ($users as $user )
+                    @if(count($admins)>0)
+                    @foreach ($admins as $admin )
                     <tr>
-                        <td>{{$user->name}}</td>
-                        <td>{{$user->email}}</td>
+                    <td><a href="/users/{{$admin->id}}">{{$admin->name}}</td>
+                        <td>{{$admin->email}}</td>
                         <td>
-                {!!Form::open(['action' => ['UsersController@destroy', $user->id], 'method' => 'POST', 'class' => 'pull-right'])!!}
+                {!!Form::open(['action' => ['UsersController@destroy', $admin->id], 'method' => 'POST', 'class' => 'pull-right'])!!}
                 {{Form::hidden('_method', 'DELETE')}}
                 {{ Form::button('<a class="delete" title="Delete" data-toggle="tooltip"><i
                 class="material-icons">&#xE872;</i></a>', ['type' => 'submit'] )  }}
@@ -184,5 +183,6 @@
             </table>
         </div>
 </body>
+
 </html>
 @endsection

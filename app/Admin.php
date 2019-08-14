@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -9,7 +11,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Admin extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasApiTokens;
+    use HasRoles;
 
     protected $guard = 'admin';
 
@@ -39,4 +42,8 @@ class Admin extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function users(){
+        return $this->hasMany('App\User');
+    }
 }

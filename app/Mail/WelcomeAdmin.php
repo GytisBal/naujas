@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Mail;
-use App\User;
+
+use App\Admin;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -19,12 +20,11 @@ class Welcome extends Mailable
      *
      * @return void
      */
-    public function __construct(User $user, $password)
+    public function __construct(Admin $user, $password)
     {
         $this->user = $user;
         $this->password = $password;
     }
-    
 
     /**
      * Build the message.

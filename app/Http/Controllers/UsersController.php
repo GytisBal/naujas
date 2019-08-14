@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Admin;
 use App\Mail\Welcome;
+use App\Mail\WelcomeAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UsersController extends Controller
 {
@@ -22,9 +27,32 @@ class UsersController extends Controller
 
     public function index()
     {
+
+       
+        // $role=Role::findById(2);
+        // $role->delete();
+        // $permission = Permission::findById(1);
+        // $permission->delete();
+    // $role = Role::create(['name' => 'super-admin']);
+    // $permission = Permission::create(['name'=>'create-admins']);
+    // auth()->user()->assignRole($role);
+    // auth()->user()->givePermissionTo($permission);
+
+
        $users = User::all();
+
+       $admins = Admin::all();
+
+       $admin_id = auth()->user()->id;
+
+       $admin = Admin::find($admin_id);
     
-        return view('users.usersManagment')->with('users', $users);
+        // return $admin->name;
+        if($admin->hasRole('super-admin')){
+            return view('users.adminsManagment')->with(['admins'=> $admins]);;
+        }else{
+            return view('users.usersManagment')->with(['users'=> $admin->users, 'admin'=>$admin]);
+        }
     }
 
     /**
@@ -44,7 +72,7 @@ class UsersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    { 
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required:unique:users,email',
@@ -52,17 +80,16 @@ class UsersController extends Controller
         
         $password = str_random(8);
 
-        // Create user
-        $user = new User;
-        $user->name =$request->input('name');
-        $user->email =$request->input('email');
-        $user->password = Hash::make($password);
-        $user->save();
+        // Create admin
+        $admin = new Admin;
+        $admin->name =$request->input('name');
+        $admin->email =$request->input('email');
+        $admin->password = Hash::make($password);
+        $admin->save();
 
-        \Mail::to($user)->send(new Welcome($user, $password));
+        \Mail::to($admin)->send(new WelcomeAdmin($admin, $password));
 
         return redirect('users');
-
     }
 
     /**
@@ -73,7 +100,11 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        //
+        $admin = Admin::find($id);
+
+      
+
+        return view('users.usersManagment')->with(['users'=> $admin->users, 'admin'=>$admin]);
     }
 
     /**
@@ -111,5 +142,30 @@ class UsersController extends Controller
 
         $user->delete();
         return redirect('/users');
+    }
+
+    public function createChild(Request $request, $id)
+    {
+        $admin = Admin::find($id);
+
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required:unique:users,email',
+        ]);
+        
+        $password = str_random(8);
+
+        // Create user
+        $user = new User;
+        $user->name =$request->input('name');
+        $user->email =$request->input('email');
+        $user->password = Hash::make($password);
+        $user->admin_id = $id;
+        $user->save();
+
+        \Mail::to($user)->send(new Welcome($user, $password));
+
+
+        return view('users.usersManagment')->with(['users'=> $admin->users, 'admin'=>$admin]);
     }
 }

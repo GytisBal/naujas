@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,8 +16,12 @@
 
 Route::resource('users', 'UsersController');
 
+Route::post('users/{user}/createChild', 'UsersController@createChild' )->name('users.createChild');
+
 Auth::routes();
 
 
 Route::get('/', 'Auth\AdminLoginController@showLoginForm')->name('admin.login');
 Route::post('/', 'Auth\AdminLoginController@login')->name('admin.login.submit');
+
+
