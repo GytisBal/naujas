@@ -172,13 +172,14 @@
                         <td>
                 {!!Form::open(['action' => ['UsersController@destroy', $admin->id], 'method' => 'POST', 'class' => 'pull-right'])!!}
                 {{Form::hidden('_method', 'DELETE')}}
-                {{ Form::button('<a class="delete" title="Delete" data-toggle="tooltip"><i
+                {{ Form::button('<a onclick="return confirm(\'Do you want to delete admin and all his users ?\')" class="delete" title="Delete" data-toggle="tooltip"><i
                 class="material-icons">&#xE872;</i></a>', ['type' => 'submit'] )  }}
             {!!Form::close()!!}
                         </td>
                     </tr>
                     @endforeach
                     @endif
+
                 </tbody>
             </table>
         </div>

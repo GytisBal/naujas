@@ -124,6 +124,9 @@
             border: none;
             background-color: transparent;
         }
+        .btn-default{
+            margin: 2rem;
+        }
     </style>
     
 </head>
@@ -134,6 +137,9 @@
     @endhasrole
     <div class="container">
         <div class="table-wrapper">
+                <div>
+                    @include('inc.messages')
+                </div>
                 <div class="col-sm-8">
                         <h2>{{$admin->name}} Users Managment</h2>
                     </div>
@@ -175,7 +181,7 @@
                         <td>
                 {!!Form::open(['action' => ['UsersController@destroy', $user->id], 'method' => 'POST', 'class' => 'pull-right'])!!}
                 {{Form::hidden('_method', 'DELETE')}}
-                {{ Form::button('<a class="delete" title="Delete" data-toggle="tooltip"><i
+                {{ Form::button('<a onclick="return confirm(\'Do you want to delete user ?\')" <a class="delete" title="Delete" data-toggle="tooltip"><i
                 class="material-icons">&#xE872;</i></a>', ['type' => 'submit'] )  }}
             {!!Form::close()!!}
                         </td>

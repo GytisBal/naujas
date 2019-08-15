@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use App\Admin;
 use App\Mail\Welcome;
-use App\Mail\WelcomeAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -20,41 +18,32 @@ class UsersController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    // public function __construct()
-    // {
-    //     $this->middleware('guest');
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function index()
     {
-
-       
-        // $role=Role::findById(2);
-        // $role->delete();
-        // $permission = Permission::findById(1);
-        // $permission->delete();
     // $role = Role::create(['name' => 'admin']);
     // $permission = Permission::create(['name'=>'create-users']);
+    // $role = Role::create(['name' => 'super-admin']);
+    // $permission = Permission::create(['name'=>'create-admins']);
     // auth()->user()->assignRole($role);
     // auth()->user()->givePermissionTo($permission);
-
-
-    //    $users = User::all();
-
-       $admins = Admin::all();
 
        $admin_id = auth()->user()->id;
 
        $admin = User::find($admin_id);
 
        $users = User::where('parent_id', $admin_id)->get();
-    
-        // return $admin->name;
-
-        
+         
         if($admin->hasRole('super-admin')){
+
             return view('users.adminsManagment')->with(['admins'=> $users]);
-        }else{
+
+        }else if($admin->hasRole('admin')) {
+
             return view('users.usersManagment')->with(['users'=> $users, 'admin'=>$admin]);
         }
     }
@@ -77,26 +66,40 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     { 
+        $deletedUser = User::onlyTrashed()
+        ->where('email', $request->input('email'));
+
+        if(count($deletedUser->get())>0)
+        {
+            $getId = $deletedUser->get()->toArray()[0]['id'];
+            $deletedUser->restore();
+            $user = User::find($getId);
+            $user->parent_id = auth()->user()->id;
+            $user->save();
+
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required:unique:users,email',
+            'email' => 'required|email|unique:users,email'
         ]);
+        }else{
+
         
-        $password = str_random(8);
+            $password = str_random(8);
 
-        // Create admin
-        $user = new user;
-        $user->name =$request->input('name');
-        $user->email =$request->input('email');
-        $user->password = Hash::make($password);
-        $user->parent_id = auth()->user()->id;
-        $user->assignRole('admin');
-        $user->givePermissionTo('create-users');
-        $user->save();
+            // Create admin
+            $user = new user;
+            $user->name =$request->input('name');
+            $user->email =$request->input('email');
+            $user->password = Hash::make($password);
+            $user->parent_id = auth()->user()->id;
+            $user->assignRole('admin');
+            $user->givePermissionTo('create-users');
+            $user->save();
 
-        \Mail::to($user)->send(new Welcome($user, $password));
+            \Mail::to($user)->send(new Welcome($user, $password));
+        }
 
-        return redirect('users');
+        return redirect()->back();
     }
 
     /**
@@ -109,18 +112,7 @@ class UsersController extends Controller
     {
         $admin = User::find($id);
 
-
-
-        // $users = User::get(['id', 'name', 'email', 'parent_id'=>"2"])->toArray();
-
         $users = User::where('parent_id', $id)->get();
-
-       
-        // $subset = $users->map->only(['id', 'name', 'email', 'parent_id']);
-        // $key = array_search(2, array_column($users, 'parent_id'));
-        // dd($users);
-
-    //   return is_array($users);
 
         return view('users.usersManagment')->with(['users'=> $users, 'admin'=>$admin]);
     }
@@ -165,29 +157,40 @@ class UsersController extends Controller
 
     public function createChild(Request $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required:unique:users,email',
-        ]);
+        $deletedUser = User::onlyTrashed()
+                ->where('email', $request->input('email'));
+
+        if(count($deletedUser->get())>0)
+        {
+            $getId = $deletedUser->get()->toArray()[0]['id'];
+            $deletedUser->restore();
+            $user = User::find($getId);
+            $user->parent_id = $id;
+            $user->save();
         
-        $password = str_random(8);
-
-        // Create user
-        $user = new User;
-        $user->name =$request->input('name');
-        $user->email =$request->input('email');
-        $user->password = Hash::make($password);
-        $user->parent_id = $id;
-        $user->save();
-
-        \Mail::to($user)->send(new Welcome($user, $password));
-
-        $admin = User::find($id);
-
-        $users = User::where('parent_id', $id)->get();
-
+        }else{
+            $this->validate($request, [
+                'name' => 'required',
+                'email' => 'required|email|unique:users,email'
+            ]);
+            
+            $password = str_random(8);
+    
+            // Create user
+            $user = new User;
+            $user->name =$request->input('name');
+            $user->email =$request->input('email');
+            $user->password = Hash::make($password);
+            $user->parent_id = $id;
+            $user->save();
+    
+            \Mail::to($user)->send(new Welcome($user, $password));
+    
+            $admin = User::find($id);
+    
+            $users = User::where('parent_id', $id)->get();
+        }
 
         return redirect()->back();
-        return view('users.usersManagment')->with(['users'=> $users, 'admin'=>$admin]);
     }
 }

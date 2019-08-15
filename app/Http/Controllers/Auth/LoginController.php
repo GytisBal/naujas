@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Auth;
+use App\User;
 
 class LoginController extends Controller
 {
@@ -23,17 +24,30 @@ class LoginController extends Controller
             'email'=>'required|email',
             'password'=>'required'
         ]);
-        
-        if(Auth::guard('web')->attempt(['email'=>$request->email,
-         'password'=>$request->password], $request->remember)){
-             
-            return redirect('users');
-         }
+            
 
+        if(Auth::guard('web')->attempt(['email'=>$request->email,
+         'password'=>$request->password], $request->remember)
+        ){
+            $user_id = auth()->user()->id;
+
+            $user = User::find($user_id);
+
+            if($user->hasRole('super-admin')||$user->hasRole('admin'))
+            {
+                return redirect('users');
+            }else
+            {
+                Auth::logout();
+                return view('auth.login');
+            }
+         }
+         return view('auth.login');
         return redirect()->back()->withInput($request->only('email', 'remember'));
     }
-    public function logout(Request $request) {
+    public function logout(Request $request) 
+    {
         Auth::logout();
         return redirect('/login');
-      }
+    }
 }
