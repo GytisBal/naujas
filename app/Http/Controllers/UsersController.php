@@ -20,10 +20,10 @@ class UsersController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function __construct()
-    {
-        $this->middleware('auth:admin');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('guest');
+    // }
 
     public function index()
     {
@@ -33,25 +33,29 @@ class UsersController extends Controller
         // $role->delete();
         // $permission = Permission::findById(1);
         // $permission->delete();
-    // $role = Role::create(['name' => 'super-admin']);
-    // $permission = Permission::create(['name'=>'create-admins']);
+    // $role = Role::create(['name' => 'admin']);
+    // $permission = Permission::create(['name'=>'create-users']);
     // auth()->user()->assignRole($role);
     // auth()->user()->givePermissionTo($permission);
 
 
-       $users = User::all();
+    //    $users = User::all();
 
        $admins = Admin::all();
 
        $admin_id = auth()->user()->id;
 
-       $admin = Admin::find($admin_id);
+       $admin = User::find($admin_id);
+
+       $users = User::where('parent_id', $admin_id)->get();
     
         // return $admin->name;
+
+        
         if($admin->hasRole('super-admin')){
-            return view('users.adminsManagment')->with(['admins'=> $admins]);;
+            return view('users.adminsManagment')->with(['admins'=> $users]);
         }else{
-            return view('users.usersManagment')->with(['users'=> $admin->users, 'admin'=>$admin]);
+            return view('users.usersManagment')->with(['users'=> $users, 'admin'=>$admin]);
         }
     }
 
@@ -81,13 +85,16 @@ class UsersController extends Controller
         $password = str_random(8);
 
         // Create admin
-        $admin = new Admin;
-        $admin->name =$request->input('name');
-        $admin->email =$request->input('email');
-        $admin->password = Hash::make($password);
-        $admin->save();
+        $user = new user;
+        $user->name =$request->input('name');
+        $user->email =$request->input('email');
+        $user->password = Hash::make($password);
+        $user->parent_id = auth()->user()->id;
+        $user->assignRole('admin');
+        $user->givePermissionTo('create-users');
+        $user->save();
 
-        \Mail::to($admin)->send(new WelcomeAdmin($admin, $password));
+        \Mail::to($user)->send(new Welcome($user, $password));
 
         return redirect('users');
     }
@@ -100,11 +107,22 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $admin = Admin::find($id);
+        $admin = User::find($id);
 
-      
 
-        return view('users.usersManagment')->with(['users'=> $admin->users, 'admin'=>$admin]);
+
+        // $users = User::get(['id', 'name', 'email', 'parent_id'=>"2"])->toArray();
+
+        $users = User::where('parent_id', $id)->get();
+
+       
+        // $subset = $users->map->only(['id', 'name', 'email', 'parent_id']);
+        // $key = array_search(2, array_column($users, 'parent_id'));
+        // dd($users);
+
+    //   return is_array($users);
+
+        return view('users.usersManagment')->with(['users'=> $users, 'admin'=>$admin]);
     }
 
     /**
@@ -138,16 +156,15 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::find($id);
+        $user = User::find($id)->delete();
 
-        $user->delete();
-        return redirect('/users');
+        $users = User::where('parent_id', $id)->delete();
+
+        return redirect()->back();
     }
 
     public function createChild(Request $request, $id)
     {
-        $admin = Admin::find($id);
-
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required:unique:users,email',
@@ -160,12 +177,17 @@ class UsersController extends Controller
         $user->name =$request->input('name');
         $user->email =$request->input('email');
         $user->password = Hash::make($password);
-        $user->admin_id = $id;
+        $user->parent_id = $id;
         $user->save();
 
         \Mail::to($user)->send(new Welcome($user, $password));
 
+        $admin = User::find($id);
 
-        return view('users.usersManagment')->with(['users'=> $admin->users, 'admin'=>$admin]);
+        $users = User::where('parent_id', $id)->get();
+
+
+        return redirect()->back();
+        return view('users.usersManagment')->with(['users'=> $users, 'admin'=>$admin]);
     }
 }

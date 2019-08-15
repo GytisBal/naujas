@@ -21,7 +21,7 @@ Route::post('users/{user}/createChild', 'UsersController@createChild' )->name('u
 Auth::routes();
 
 
-Route::get('/', 'Auth\AdminLoginController@showLoginForm')->name('admin.login');
-Route::post('/', 'Auth\AdminLoginController@login')->name('admin.login.submit');
+Route::get('/', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('/', 'Auth\LoginController@login')->name('login.submit');
 
 

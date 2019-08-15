@@ -129,7 +129,9 @@
 </head>
 
 <body>
-    <a href="/users" class="btn btn-default">Go Back</a>
+    @hasrole('super-admin')
+        <a href="/users" class="btn btn-default">Go Back</a>
+    @endhasrole
     <div class="container">
         <div class="table-wrapper">
                 <div class="col-sm-8">
