@@ -7,8 +7,6 @@ use App\Mail\Welcome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class UsersController extends Controller
 {
@@ -20,17 +18,11 @@ class UsersController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'section.owner']);
     }
 
     public function index()
     {
-    // $role = Role::create(['name' => 'admin']);
-    // $permission = Permission::create(['name'=>'create-users']);
-    // $role = Role::create(['name' => 'super-admin']);
-    // $permission = Permission::create(['name'=>'create-admins']);
-    // auth()->user()->assignRole($role);
-    // auth()->user()->givePermissionTo($permission);
 
        $admin_id = auth()->user()->id;
 
