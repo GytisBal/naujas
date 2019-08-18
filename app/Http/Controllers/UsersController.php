@@ -6,6 +6,7 @@ use App\User;
 use App\Mail\Welcome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 
 class UsersController extends Controller
@@ -65,31 +66,35 @@ class UsersController extends Controller
         {
             $getId = $deletedUser->get()->toArray()[0]['id'];
             $deletedUser->restore();
+
             $user = User::find($getId);
-            $user->parent_id = auth()->user()->id;
-            $user->name =$request->input('name');
-            $user->save();
+
 
         }else{
-            $this->validate($request, [
+            $request->validate([
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email'
             ]);
 
-            $password = str_random(8);
-
             // Create admin
             $user = new user;
-            $user->name =$request->input('name');
             $user->email =$request->input('email');
-            $user->password = Hash::make($password);
-            $user->parent_id = auth()->user()->id;
+        }
+
+        if(!$user->hasRole('admin'))
+        {
             $user->assignRole('admin');
             $user->givePermissionTo('create-users');
-            $user->save();
-
-            \Mail::to($user)->send(new Welcome($user, $password));
         }
+
+        $password = Str::random(8);
+
+        $user->password = Hash::make($password);
+        $user->parent_id = auth()->user()->id;
+        $user->name =$request->input('name');
+        $user->save();
+
+        \Mail::to($user)->send(new Welcome($user, $password));
 
         return redirect()->back();
     }
@@ -142,10 +147,9 @@ class UsersController extends Controller
     {
         $id = $request->userId;
 
+        User::find($id)->delete();
 
-        $user = User::find($id)->delete();
-
-        $users = User::where('parent_id', $id)->delete();
+       User::where('parent_id', $id)->delete();
 //
         return redirect()->back();
     }
@@ -159,33 +163,31 @@ class UsersController extends Controller
         {
             $getId = $deletedUser->get()->toArray()[0]['id'];
             $deletedUser->restore();
+
             $user = User::find($getId);
-            $user->parent_id = $id;
-            $user->name =$request->input('name');
-            $user->save();
+
 
         }else{
-            $this->validate($request, [
+            $request->validate([
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email'
             ]);
 
-            $password = str_random(8);
 
             // Create user
             $user = new User;
-            $user->name =$request->input('name');
             $user->email =$request->input('email');
-            $user->password = Hash::make($password);
-            $user->parent_id = $id;
-            $user->save();
 
-            \Mail::to($user)->send(new Welcome($user, $password));
-
-            $admin = User::find($id);
-
-            $users = User::where('parent_id', $id)->get();
         }
+
+        $password = Str::random(8);
+
+        $user->name =$request->input('name');
+        $user->password = Hash::make($password);
+        $user->parent_id = $id;
+        $user->save();
+
+        \Mail::to($user)->send(new Welcome($user, $password));
 
         return redirect()->back();
     }
