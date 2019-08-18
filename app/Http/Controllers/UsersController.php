@@ -37,7 +37,7 @@ class UsersController extends Controller
        $admin = User::find($admin_id);
 
        $users = User::where('parent_id', $admin_id)->get();
-         
+
         if($admin->hasRole('super-admin')){
 
             return view('users.adminsManagment')->with(['admins'=> $users]);
@@ -65,7 +65,7 @@ class UsersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    { 
+    {
         $deletedUser = User::onlyTrashed()
         ->where('email', $request->input('email'));
 
@@ -75,15 +75,15 @@ class UsersController extends Controller
             $deletedUser->restore();
             $user = User::find($getId);
             $user->parent_id = auth()->user()->id;
+            $user->name =$request->input('name');
             $user->save();
 
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email'
-        ]);
         }else{
+            $this->validate($request, [
+                'name' => 'required',
+                'email' => 'required|email|unique:users,email'
+            ]);
 
-        
             $password = str_random(8);
 
             // Create admin
@@ -146,12 +146,15 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
+        $id = $request->userId;
+
+
         $user = User::find($id)->delete();
 
         $users = User::where('parent_id', $id)->delete();
-
+//
         return redirect()->back();
     }
 
@@ -166,16 +169,17 @@ class UsersController extends Controller
             $deletedUser->restore();
             $user = User::find($getId);
             $user->parent_id = $id;
+            $user->name =$request->input('name');
             $user->save();
-        
+
         }else{
             $this->validate($request, [
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email'
             ]);
-            
+
             $password = str_random(8);
-    
+
             // Create user
             $user = new User;
             $user->name =$request->input('name');
@@ -183,11 +187,11 @@ class UsersController extends Controller
             $user->password = Hash::make($password);
             $user->parent_id = $id;
             $user->save();
-    
+
             \Mail::to($user)->send(new Welcome($user, $password));
-    
+
             $admin = User::find($id);
-    
+
             $users = User::where('parent_id', $id)->get();
         }
 

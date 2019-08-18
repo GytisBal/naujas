@@ -124,11 +124,15 @@
             border: none;
             background-color: transparent;
         }
+        .modal-footer button{
+            border: none;
+            background-color: transparent;
+        }
         .btn-default{
             margin: 2rem;
         }
     </style>
-    
+
 </head>
 
 <body>
@@ -144,9 +148,9 @@
                         <h2>{{$admin->name}} Users Managment</h2>
                     </div>
             <div class="table-title">
-                    
+
                 <div class="row">
-                 
+
             {!! Form::open(['route' => ['users.createChild', $admin->id], 'method' => 'POST']) !!}
             <table class="table table-bordered">
                 <tr>
@@ -179,11 +183,9 @@
                         <td>{{$user->name}}</td>
                         <td>{{$user->email}}</td>
                         <td>
-                {!!Form::open(['action' => ['UsersController@destroy', $user->id], 'method' => 'POST', 'class' => 'pull-right'])!!}
-                {{Form::hidden('_method', 'DELETE')}}
-                {{ Form::button('<a onclick="return confirm(\'Do you want to delete user ?\')" <a class="delete" title="Delete" data-toggle="tooltip"><i
-                class="material-icons">&#xE872;</i></a>', ['type' => 'submit'] )  }}
-            {!!Form::close()!!}
+                            <a type="button" class="delete" data-toggle="modal" data-target="#deleteModal"
+                               data-userid={{$user->id}}><i
+                                    class="material-icons">&#xE872;</i></a>
                         </td>
                     </tr>
                     @endforeach
@@ -193,4 +195,43 @@
         </div>
 </body>
 </html>
+<div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Delete user</h4>
+            </div>
+
+            <div class="modal-body">
+                <p>Are you sure, you want to delete user ?</p>
+            </div>
+
+            <div class="modal-footer">
+                {!!Form::open(['action' => ['UsersController@destroy', "test" ], 'method' => 'POST'])!!}
+                {{Form::hidden('_method', 'DELETE')}}
+                {{Form::hidden('userId', '', ['id' => 'userId'])}}
+                {{ Form::button('<a  class="btn btn-primary"  data-dismiss="modal">No, Close</a>', ['type' => 'button'] )  }}
+                {{ Form::button('<a  class="btn btn-danger" >Yes, Delete</a>', ['type' => 'submit'] )  }}
+                {!!Form::close()!!}
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<script>
+    $('#deleteModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget) // Button that triggered the modal
+        const recipient = button.data('userid')
+
+        console.log(recipient)
+
+        const modal = $(this)
+
+        modal.find('.modal-footer #userId').val(recipient)
+    })
+</script>
 @endsection

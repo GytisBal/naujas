@@ -15,7 +15,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     <style type="text/css">
+
         body {
             color: #404E67;
             background: #F5F7FA;
@@ -124,66 +126,107 @@
             border: none;
             background-color: transparent;
         }
+        .modal-footer button{
+            border: none;
+            background-color: transparent;
+        }
     </style>
-    
+
 </head>
 
 <body>
-    <div class="container">
-        <div class="table-wrapper">
-                <div class="col-sm-8">
-                        <h2>Admins Managment</h2>
-                    </div>
-            <div class="table-title">
-                    
-                <div class="row">
-                 
-            {!! Form::open(['action' => 'UsersController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
-            <table class="table table-bordered">
-                <tr>
-                    <td>
-                      {{Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'Name'])}}
-                    </td>
-                     <td>
-                      {{Form::text('email', '', ['class' => 'form-control', 'placeholder' => 'Email'])}}
-                     </td>
-                     <td>
-                  {{Form::submit('Add New', ['class'=>'btn btn-info add-new'])}}
-                     </td>
-              </tr>
-                  {!! Form::close() !!}
-            </table>
-                </div>
-            </div>
-            <table class="table table-bordered">
-                <thead>
+<div class="container">
+    <div class="table-wrapper">
+        <div>
+            @include('inc.messages')
+        </div>
+        <div class="col-sm-8">
+            <h2>Admins Managment</h2>
+        </div>
+        <div class="table-title">
+
+            <div class="row">
+
+                {!! Form::open(['action' => 'UsersController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
+                <table class="table table-bordered">
                     <tr>
-                        <th>Admin name</th>
-                        <th>Admin email</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(count($admins)>0)
-                    @foreach ($admins as $admin )
-                    <tr>
-                    <td><a href="/users/{{$admin->id}}">{{$admin->name}}</td>
-                        <td>{{$admin->email}}</td>
                         <td>
-                {!!Form::open(['action' => ['UsersController@destroy', $admin->id], 'method' => 'POST', 'class' => 'pull-right'])!!}
-                {{Form::hidden('_method', 'DELETE')}}
-                {{ Form::button('<a onclick="return confirm(\'Do you want to delete admin and all his users ?\')" class="delete" title="Delete" data-toggle="tooltip"><i
-                class="material-icons">&#xE872;</i></a>', ['type' => 'submit'] )  }}
-            {!!Form::close()!!}
+                            {{Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'Name'])}}
+                        </td>
+                        <td>
+                            {{Form::text('email', '', ['class' => 'form-control', 'placeholder' => 'Email'])}}
+                        </td>
+                        <td>
+                            {{Form::submit('Add New', ['class'=>'btn btn-info add-new'])}}
                         </td>
                     </tr>
-                    @endforeach
-                    @endif
-
-                </tbody>
-            </table>
+                    {!! Form::close() !!}
+                </table>
+            </div>
         </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Admin name</th>
+                <th>Admin email</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if(count($admins)>0)
+                @foreach ($admins as $admin )
+                    <tr>
+                        <td><a href="/users/{{$admin->id}}">{{$admin->name}}</td>
+                        <td>{{$admin->email}}</td>
+                        <td>
+                            <a type="button" class="delete" data-toggle="modal" data-target="#deleteModal"
+                               data-userid={{$admin->id}}><i
+                                    class="material-icons">&#xE872;</i></a>
+                        </td>
+                    </tr>
+                @endforeach
+            @endif
+
+            </tbody>
+        </table>
+    </div>
 </body>
+<div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Delete admin</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure, you want to delete admin and all his added users ?</p>
+            </div>
+            <div class="modal-footer">
+                {!!Form::open(['action' => ['UsersController@destroy', "test" ], 'method' => 'POST'])!!}
+                {{Form::hidden('_method', 'DELETE')}}
+                {{Form::hidden('userId', '', ['id' => 'userId'])}}
+                {{ Form::button('<a  class="btn btn-primary"  data-dismiss="modal">No, Close</a>', ['type' => 'button'] )  }}
+                {{ Form::button('<a  class="btn btn-danger" >Yes, Delete</a>', ['type' => 'submit'] )  }}
+                {!!Form::close()!!}
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<script>
+    $('#deleteModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget) // Button that triggered the modal
+        const recipient = button.data('userid')
+
+        console.log(recipient)
+
+        const modal = $(this)
+
+        modal.find('.modal-footer #userId').val(recipient)
+    })
+</script>
 
 </html>
+
 @endsection
