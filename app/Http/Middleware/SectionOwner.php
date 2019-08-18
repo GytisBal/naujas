@@ -17,9 +17,8 @@ class SectionOwner
     public function handle($request, Closure $next)
     {
 
-        // dd( $request->user()->hasRole('super-admin'));
 
-        if($request->route()->uri == "users" || $request->user()->hasRole('super-admin')){
+        if($request->route()->uri == "users" || $request->route()->methods[0] === "DELETE" || $request->user()->hasRole('super-admin')){
 
             return $next($request);
 
@@ -30,6 +29,6 @@ class SectionOwner
         {
             return $next($request);
         }
-        
+
     }
 }

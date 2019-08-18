@@ -210,7 +210,7 @@
             </div>
 
             <div class="modal-footer">
-                {!!Form::open(['action' => ['UsersController@destroy', "test" ], 'method' => 'POST'])!!}
+                {!!Form::open(['action' => ['UsersController@destroy', "delete"], 'method' => 'POST'])!!}
                 {{Form::hidden('_method', 'DELETE')}}
                 {{Form::hidden('userId', '', ['id' => 'userId'])}}
                 {{ Form::button('<a  class="btn btn-primary"  data-dismiss="modal">No, Close</a>', ['type' => 'button'] )  }}
