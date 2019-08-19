@@ -17,7 +17,7 @@ class LoginController extends Controller
     }
 
     public function showLoginForm(){
-        
+
         return view('auth.login');
     }
     public function login(Request $request)
@@ -26,17 +26,17 @@ class LoginController extends Controller
             'email'=>'required|email',
             'password'=>'required'
         ]);
-            
+
 
         if(Auth::guard('web')->attempt(['email'=>$request->email,
          'password'=>$request->password], $request->remember)
         ){
-            // $role = Role::create(['name' => 'admin']);
-            // $permission = Permission::create(['name'=>'create-users']);
-            // $role = Role::create(['name' => 'super-admin']);
-            // $permission = Permission::create(['name'=>'create-admins']);
-            // auth()->user()->assignRole($role);
-            // auth()->user()->givePermissionTo($permission);
+//             Role::create(['name' => 'admin']);
+//             Permission::create(['name'=>'create-users']);
+//             $role = Role::create(['name' => 'super-admin']);
+//             $permission = Permission::create(['name'=>'create-admins']);
+//             auth()->user()->assignRole($role);
+//             auth()->user()->givePermissionTo($permission);
 
             $user_id = auth()->user()->id;
 
@@ -52,9 +52,8 @@ class LoginController extends Controller
             }
          }
          return view('auth.login');
-        return redirect()->back()->withInput($request->only('email', 'remember'));
     }
-    public function logout(Request $request) 
+    public function logout(Request $request)
     {
         Auth::logout();
         return redirect('/login');

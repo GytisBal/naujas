@@ -62,6 +62,7 @@ class UsersController extends Controller
         $deletedUser = User::onlyTrashed()
         ->where('email', $request->input('email'));
 
+
         if(count($deletedUser->get())>0)
         {
             $getId = $deletedUser->get()->toArray()[0]['id'];
