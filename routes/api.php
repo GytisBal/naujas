@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/controlRelay', 'RelayController@control');
+Route::post('/statusRelay', 'RelayController@status');
 
 
 Route::post('/register', 'AuthController@register');
