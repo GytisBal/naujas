@@ -10,6 +10,8 @@ class RelayController extends Controller
     public function status(Request $request)
     {
 
+        dd($request->user()->parent_id);
+
         $params = [
             'auth_key' => 'YzJkNHVpZAE6836A3F4E4C39A362E0EAB377E52C166F221554926191FEFBB8869DB6D4CF552C6EBC94151E17EF',
             'id' => '7AE9D2',

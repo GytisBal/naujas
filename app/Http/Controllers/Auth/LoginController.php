@@ -31,12 +31,12 @@ class LoginController extends Controller
         if(Auth::guard('web')->attempt(['email'=>$request->email,
          'password'=>$request->password], $request->remember)
         ){
-//             Role::create(['name' => 'admin']);
-//             Permission::create(['name'=>'create-users']);
-//             $role = Role::create(['name' => 'super-admin']);
-//             $permission = Permission::create(['name'=>'create-admins']);
-//             auth()->user()->assignRole($role);
-//             auth()->user()->givePermissionTo($permission);
+            // Role::create(['name' => 'admin']);
+            // Permission::create(['name'=>'create-users']);
+            // $role = Role::create(['name' => 'super-admin']);
+            // $permission = Permission::create(['name'=>'create-admins']);
+            // auth()->user()->assignRole($role);
+            // auth()->user()->givePermissionTo($permission);
 
             $user_id = auth()->user()->id;
 

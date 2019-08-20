@@ -17,8 +17,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/controlRelay', 'RelayController@control');
-Route::post('/statusRelay', 'RelayController@status');
+
+Route::middleware('auth:api')->post('/statusRelay', 'RelayController@status');
+Route::middleware('auth:api')->post('/controlRelay', 'RelayController@control');
+
+
+//Route::group(array('before' => 'auth:api'), function() {
+//
+//    Route::post('/controlRelay', 'RelayController@control');
+//
+//    Route::post('/statusRelay', 'RelayController@status');
+//});
+
+
 
 
 Route::post('/register', 'AuthController@register');
