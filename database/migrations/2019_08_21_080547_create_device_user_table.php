@@ -17,7 +17,6 @@ class CreateDeviceUserTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('device_id');
             $table->bigInteger('user_id');
-            $table->timestamps();
         });
     }
 

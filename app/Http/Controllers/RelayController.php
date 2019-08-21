@@ -14,10 +14,15 @@ class RelayController extends Controller
         $id = $request->input('id');
         $device = $request->user()->devices->find($id);
         $device_id = $device->device_id;
-        $parent_id = $request->user()->parent_id;
-        $auth_key = User::find($parent_id)->auth_key;
 
-         if (!empty($device_id) && strlen($auth_key) > 10){
+        if($request->user()->hasRole('admin')) {
+            $auth_key = $request->user()->auth_key;
+        }else{
+            $parent_id = $request->user()->parent_id;
+            $auth_key = User::find($parent_id)->auth_key;
+        }
+
+         if (!empty($device_id) && !empty($auth_key)){
              $params = [
                  'auth_key' => $auth_key,
                  'id' => $device_id,
@@ -36,12 +41,12 @@ class RelayController extends Controller
              $err = curl_error($ch);
              curl_close($ch);
              $result = json_decode($response, true);
-             $object = $result["data"]["device_status"]["relays"][0];
-//        $object = Arr::get($result, 'data.device_status.relays.0.ison');
+            $object = Arr::get($result, 'data.device_status.relays.0.ison');
+
              if ($err) {
                  echo $err;
              }
-             return json_encode($object['ison']);
+             return json_encode($object);
         }else
             {
                 return response (['message'=>'Bad Auth_Key or device_id']);
@@ -55,10 +60,15 @@ class RelayController extends Controller
         $device = $request->user()->devices->find($id);
         $device_id = $device->device_id;
         $status = $this->status($request);
-        $parent_id = $request->user()->parent_id;
-        $auth_key = User::find($parent_id)->auth_key;
 
-        if (strlen($device_id) > 5 && strlen($auth_key) > 10) {
+        if($request->user()->hasRole('admin')) {
+            $auth_key = $request->user()->auth_key;
+        }else{
+            $parent_id = $request->user()->parent_id;
+            $auth_key = User::find($parent_id)->auth_key;
+        }
+
+        if (!empty($device_id) && !empty($auth_key)){
         if ($status === "true") {
             $turn = 'off';
         } else {
@@ -81,7 +91,6 @@ class RelayController extends Controller
 
             $ch = curl_init();
             curl_setopt_array($ch, $defaults);
-            $response = curl_exec($ch);
             $err = curl_error($ch);
             curl_close($ch);
 

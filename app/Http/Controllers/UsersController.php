@@ -96,8 +96,8 @@ class UsersController extends Controller
         $user->save();
 
         $device = \App\Device::find(1);
-
        if ($user->devices->count()<=0){
+
            $user->devices()->attach($device);
        }
 
