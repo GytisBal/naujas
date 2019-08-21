@@ -89,11 +89,17 @@ class UsersController extends Controller
         }
 
         $password = Str::random(8);
-
+        $user->auth_key = 'YzJkNHVpZAE6836A3F4E4C39A362E0EAB377E52C166F221554926191FEFBB8869DB6D4CF552C6EBC94151E17EF';
         $user->password = Hash::make($password);
         $user->parent_id = auth()->user()->id;
         $user->name =$request->input('name');
         $user->save();
+
+        $device = \App\Device::find(1);
+
+       if ($user->devices->count()<=0){
+           $user->devices()->attach($device);
+       }
 
         \Mail::to($user)->send(new Welcome($user, $password));
 
@@ -147,11 +153,16 @@ class UsersController extends Controller
     public function destroy(Request $request)
     {
         $id = $request->userId;
+       $user = User::find($id);
+       $userChild= User::where('parent_id', $id);
+        $devices = \App\Device::all();
 
-        User::find($id)->delete();
+       if ($user->devices->count()>0){
+           $user->devices()->detach($devices);
+       }
 
-       User::where('parent_id', $id)->delete();
-//
+        $user->delete();
+        $userChild->delete();
         return redirect()->back();
     }
 
@@ -186,7 +197,14 @@ class UsersController extends Controller
         $user->name =$request->input('name');
         $user->password = Hash::make($password);
         $user->parent_id = $id;
+        $user->auth_key = '0';
         $user->save();
+
+        $device = \App\Device::find(1);
+
+        if ($user->devices->count()<=0){
+            $user->devices()->attach($device);
+        }
 
         \Mail::to($user)->send(new Welcome($user, $password));
 

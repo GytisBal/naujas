@@ -2,74 +2,97 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class RelayController extends Controller
 {
 
     public function status(Request $request)
     {
+        $id = $request->input('id');
+        $device = $request->user()->devices->find($id);
+        $device_id = $device->device_id;
+        $parent_id = $request->user()->parent_id;
+        $auth_key = User::find($parent_id)->auth_key;
 
-        dd($request->user()->parent_id);
+         if (!empty($device_id) && strlen($auth_key) > 10){
+             $params = [
+                 'auth_key' => $auth_key,
+                 'id' => $device_id,
+                 'channel' => 0];
 
-        $params = [
-            'auth_key' => 'YzJkNHVpZAE6836A3F4E4C39A362E0EAB377E52C166F221554926191FEFBB8869DB6D4CF552C6EBC94151E17EF',
-            'id' => '7AE9D2',
-            'channel' => 0];
+             $defaults = array(
+                 CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/status",
+                 CURLOPT_POST => true,
+                 CURLOPT_POSTFIELDS => $params,
+                 CURLOPT_RETURNTRANSFER => true,
+             );
 
-        $defaults = array(
-            CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/status",
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $params,
-            CURLOPT_RETURNTRANSFER => true,
-        );
-
-        $ch = curl_init();
-        curl_setopt_array($ch, $defaults);
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-        $object = $result["data"]["device_status"]["relays"][0];
-
-
-        return  json_encode($object['ison']);
-
+             $ch = curl_init();
+             curl_setopt_array($ch, $defaults);
+             $response = curl_exec($ch);
+             $err = curl_error($ch);
+             curl_close($ch);
+             $result = json_decode($response, true);
+             $object = $result["data"]["device_status"]["relays"][0];
+//        $object = Arr::get($result, 'data.device_status.relays.0.ison');
+             if ($err) {
+                 echo $err;
+             }
+             return json_encode($object['ison']);
+        }else
+            {
+                return response (['message'=>'Bad Auth_Key or device_id']);
+         }
     }
 
     public function control(Request $request)
     {
 
+        $id = $request->input('id');
+        $device = $request->user()->devices->find($id);
+        $device_id = $device->device_id;
         $status = $this->status($request);
+        $parent_id = $request->user()->parent_id;
+        $auth_key = User::find($parent_id)->auth_key;
 
-        if($status === "true"){
+        if (strlen($device_id) > 5 && strlen($auth_key) > 10) {
+        if ($status === "true") {
             $turn = 'off';
-        }else {
+        } else {
             $turn = 'on';
         }
         sleep(2);
 
-        $params = [
-            'auth_key' => 'YzJkNHVpZAE6836A3F4E4C39A362E0EAB377E52C166F221554926191FEFBB8869DB6D4CF552C6EBC94151E17EF',
-            'id' => '7AE9D2',
-            'turn' => $turn,
-            'channel'=> 0];
+            $params = [
+                'auth_key' => $auth_key,
+                'id' => $device_id,
+                'turn' => $turn,
+                'channel' => 0];
 
+            $defaults = array(
+                CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/relay/control/",
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $params,
+                CURLOPT_RETURNTRANSFER => true,
+            );
 
-        $defaults = array(
-            CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/relay/control/",
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $params,
-            CURLOPT_RETURNTRANSFER => true,
-        );
+            $ch = curl_init();
+            curl_setopt_array($ch, $defaults);
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
 
-        $ch = curl_init();
-        curl_setopt_array($ch, $defaults);
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
+            if ($err) {
+                echo $err;
+            }
 
-        return json_encode($turn);
+            return json_encode($turn);
+        }else{
+            return response (['message'=>'Bad Auth_Key or device_id']);
+        }
+
     }
 }
