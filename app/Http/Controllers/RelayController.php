@@ -91,6 +91,7 @@ class RelayController extends Controller
 
             $ch = curl_init();
             curl_setopt_array($ch, $defaults);
+            curl_exec($ch);
             $err = curl_error($ch);
             curl_close($ch);
 
