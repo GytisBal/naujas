@@ -11,6 +11,8 @@ class RelayController extends Controller
 
     public function status(Request $request)
     {
+       $userId = $request->user()->id;
+        $token = auth()->tokenById($userId);
         $id = $request->input('id');
         $device = $request->user()->devices->find($id);
         $device_id = $device->device_id;
@@ -46,7 +48,7 @@ class RelayController extends Controller
              if ($err) {
                  echo $err;
              }
-             return json_encode($object);
+             return json_encode(['status' => $object, 'accessToken'=>$token]);
         }else
             {
                 return response (['message'=>'Bad Auth_Key or device_id']);
@@ -55,21 +57,21 @@ class RelayController extends Controller
 
     public function control(Request $request)
     {
+        $userId = $request->user()->id;
+        $token = auth()->tokenById($userId);
 
         $id = $request->input('id');
         $device = $request->user()->devices->find($id);
         $device_id = $device->device_id;
-        $status = $this->status($request);
-
+        $status = json_decode($this->status($request))->status;
         if($request->user()->hasRole('admin')) {
             $auth_key = $request->user()->auth_key;
         }else{
             $parent_id = $request->user()->parent_id;
             $auth_key = User::find($parent_id)->auth_key;
         }
-
         if (!empty($device_id) && !empty($auth_key)){
-        if ($status === "true") {
+        if ($status === true) {
             $turn = 'off';
         } else {
             $turn = 'on';
@@ -99,7 +101,7 @@ class RelayController extends Controller
                 echo $err;
             }
 
-            return json_encode($turn);
+            return response(['turn' => $turn, 'accessToken'=>$token]);
         }else{
             return response (['message'=>'Bad Auth_Key or device_id']);
         }

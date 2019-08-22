@@ -61,6 +61,9 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'section.owner' => \App\Http\Middleware\SectionOwner::class,
+        'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+        'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+        'refresh.token' => \App\Http\Middleware\RefreshToken::class,
     ];
 
     /**
