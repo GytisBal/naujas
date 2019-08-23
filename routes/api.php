@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('jwt.auth')->get('users', function () {
-    return auth('api')->user();
-});
-
 Route::group(['middleware' => ["refresh.token", 'auth:api']], function () {
     Route::post('/controlRelay', 'RelayController@control');
     Route::post('/statusRelay', 'RelayController@status');

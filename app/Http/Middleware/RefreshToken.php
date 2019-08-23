@@ -30,10 +30,6 @@ class RefreshToken
                    'response' => null // nothing to show
                  ]);
             }
-
-//            $refreshed = JWTAuth::refresh(JWTAuth::getToken());
-//            $user = JWTAuth::setToken($refreshed)->toUser();
-//              $next($request)->header('Authorization', 'Bearer '.$refreshed);
         }
         catch (TokenExpiredException $e)
         {
