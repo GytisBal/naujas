@@ -1,34 +1,30 @@
 @extends('layouts.dashboard')
 
 @section('content')
-    <div class="container">
-        <div class="table-wrapper">
+    <div class="container col-lg-9 usersManagement">
+        <div class="row">
             <div>
                 @include('inc.messages')
             </div>
             <div class="col-sm-8">
-                <h2>Admins Management</h2>
+                <h2 class="header">Admins Management</h2>
             </div>
-            <div class="table-title">
-                <div class="row">
-                    {!! Form::open(['action' => 'UsersController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
-                    <table class="table table-bordered">
-                        <tr>
-                            <td>
-                                {{Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'Name'])}}
-                            </td>
-                            <td>
-                                {{Form::text('email', '', ['class' => 'form-control', 'placeholder' => 'Email'])}}
-                            </td>
-                            <td>
-                                {{Form::submit('Add New', ['class'=>'btn btn-info add-new'])}}
-                            </td>
-                        </tr>
-                        {!! Form::close() !!}
-                    </table>
-                </div>
-            </div>
-            <table class="table table-bordered">
+            {!! Form::open(['action' => 'UsersController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
+            <table class="table table-bordered table-form">
+                <tr>
+                    <td>
+                        {{Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'Name'])}}
+                    </td>
+                    <td>
+                        {{Form::text('email', '', ['class' => 'form-control', 'placeholder' => 'Email'])}}
+                    </td>
+                    <td>
+                        {{Form::submit('Add New', ['class'=>'btn btn-info add-new'])}}
+                    </td>
+                </tr>
+                {!! Form::close() !!}
+            </table>
+            <table class="table table-bordered table-list">
                 <thead>
                 <tr>
                     <th>Admin name</th>

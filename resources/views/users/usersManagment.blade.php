@@ -1,7 +1,6 @@
 @extends('layouts.dashboard')
 
 @section('content')
-
     @hasrole('super-admin')
     <a href="/users" class="btn btn-default">Go Back</a>
     @endhasrole
@@ -13,9 +12,8 @@
             <div class="col-sm-8">
                 <h2 class="header">{{$admin->name}} Users Management</h2>
             </div>
-
             {!! Form::open(['route' => ['users.createChild', $admin->id], 'method' => 'POST']) !!}
-            <table class="table table-bordered">
+            <table class="table table-bordered table-form">
                 <tbody>
                 <tr>
                     <td>
@@ -32,7 +30,7 @@
                 </tbody>
             </table>
 
-        <table class="table table-bordered">
+        <table class="table table-bordered table-list">
             <thead>
             <tr>
                 <th>User name</th>

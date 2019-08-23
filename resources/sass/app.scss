@@ -7,3 +7,10 @@
 // Bootstrap
 //@import '~bootstrap/scss/bootstrap';
 @import "customcss/_usermanagement";
+
+.loginCard{
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-color: lightsteelblue;
+    margin-top: 30px;
+}

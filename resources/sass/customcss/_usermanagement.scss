@@ -26,3 +26,37 @@
     border: none;
     background-color: transparent;
 }
+
+@media screen and (max-width: 600px) {
+    .content-header {
+        text-align: center;
+    }
+    .content {
+        padding: 0;
+
+        .usersManagement {
+            padding: 0;
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .table-bordered {
+                font-size: 16px;
+            }
+
+            .table-form {
+                text-align: center;
+
+                td {
+                    display: block;
+                }
+
+                .btn-info {
+                    float: none;
+                }
+            }
+        }
+    }
+}
+

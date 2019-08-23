@@ -32,3 +32,44 @@
   background-color: transparent;
 }
 
+@media screen and (max-width: 600px) {
+  .content-header {
+    text-align: center;
+  }
+
+  .content {
+    padding: 0;
+  }
+
+  .content .usersManagement {
+    padding: 0;
+  }
+
+  .content .usersManagement h2 {
+    font-size: 20px;
+  }
+
+  .content .usersManagement .table-bordered {
+    font-size: 16px;
+  }
+
+  .content .usersManagement .table-form {
+    text-align: center;
+  }
+
+  .content .usersManagement .table-form td {
+    display: block;
+  }
+
+  .content .usersManagement .table-form .btn-info {
+    float: none;
+  }
+}
+
+.loginCard {
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: lightsteelblue;
+  margin-top: 30px;
+}
+
