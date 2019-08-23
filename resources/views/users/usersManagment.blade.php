@@ -1,22 +1,20 @@
 @extends('layouts.dashboard')
 
 @section('content')
-    <body>
-    @hasrole('super-admin')
-    <a href="/users" class="btn btn-default">Go Back</a>
-    @endhasrole
     <div class="container">
-        <div class="table-wrapper">
+        <link href="{{ asset('css/userManagement.css') }}" rel="stylesheet">
+        @hasrole('super-admin')
+        <a href="/users" class="btn btn-default">Go Back</a>
+        @endhasrole
+        <div class="table-wrapper col-lg-9">
             <div>
                 @include('inc.messages')
             </div>
             <div class="col-sm-8">
-                <h2>{{$admin->name}} Users Managment</h2>
+                <h2>{{$admin->name}} Users Management</h2>
             </div>
             <div class="table-title">
-
                 <div class="row">
-
                     {!! Form::open(['route' => ['users.createChild', $admin->id], 'method' => 'POST']) !!}
                     <table class="table table-bordered">
                         <tr>
@@ -61,5 +59,4 @@
         </div>
         @include("inc.modal")
     </div>
-    </body>
 @endsection

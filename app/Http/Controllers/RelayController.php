@@ -11,8 +11,7 @@ class RelayController extends Controller
 
     public function status(Request $request)
     {
-       $userId = $request->user()->id;
-        $token = auth()->tokenById($userId);
+        $token = auth()->tokenById($request->user()->id);
         $id = $request->input('id');
         $device = $request->user()->devices->find($id);
         $device_id = $device->device_id;
@@ -57,13 +56,13 @@ class RelayController extends Controller
 
     public function control(Request $request)
     {
-        $userId = $request->user()->id;
-        $token = auth()->tokenById($userId);
 
+        $token = auth()->tokenById($request->user()->id);
         $id = $request->input('id');
         $device = $request->user()->devices->find($id);
         $device_id = $device->device_id;
         $status = json_decode($this->status($request))->status;
+
         if($request->user()->hasRole('admin')) {
             $auth_key = $request->user()->auth_key;
         }else{

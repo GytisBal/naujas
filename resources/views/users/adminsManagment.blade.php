@@ -2,12 +2,13 @@
 
 @section('content')
     <div class="container">
+        <link href="{{ asset('css/userManagement.css') }}" rel="stylesheet">
         <div class="table-wrapper">
             <div>
                 @include('inc.messages')
             </div>
             <div class="col-sm-8">
-                <h2>Admins Managment</h2>
+                <h2>Admins Management</h2>
             </div>
             <div class="table-title">
                 <div class="row">
