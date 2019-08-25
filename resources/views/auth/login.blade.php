@@ -7,6 +7,7 @@
         <div class="col-md-8 loginCard">
             <div class="card">
                 <div class="card-header">{{ __('Admin Login') }}</div>
+                @include('inc.messages')
                 <div class="card-body">
                     <form method="POST" action="{{ route('login.submit') }}">
                         @csrf

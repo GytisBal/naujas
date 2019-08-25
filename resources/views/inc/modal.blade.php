@@ -23,5 +23,18 @@
 
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
-    <script src="{{ asset('js/modal.js') }}" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget) // Button that triggered the modal
+            const recipient = button.data('userid')
+
+            console.log(recipient);
+
+            const modal = $(this)
+
+            modal.find('.modal-footer #userId').val(recipient)
+        })
+    </script>
 </div>

@@ -151,6 +151,11 @@ class UsersController extends Controller
 
         $devices = \App\Device::all();
 
+        if($user->hasRole('admin')){
+            $user->removeRole('admin');
+            $user->revokePermissionTo('create-users');
+        }
+
         if ($user->devices->count() > 0) {
             $user->devices()->detach($devices);
         }
