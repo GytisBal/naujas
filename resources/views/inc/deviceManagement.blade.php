@@ -1,48 +1,51 @@
 @extends('layouts.dashboard')
 
 @section('content')
+    <a href="/users" class="btn btn-default">Go Back</a>
     <div class="container col-lg-9 usersManagement">
         <div class="row">
             <div>
                 @include('inc.messages')
             </div>
             <div class="col-sm-8">
-                <h2 class="header">Admins Management</h2>
+                <h2 class="header">Device Management</h2>
             </div>
-            {!! Form::open(['action' => 'UsersController@store', 'method' => 'POST',]) !!}
+            {!! Form::open(['route' => ['user.addDevice', $user->id], 'method' => 'POST']) !!}
             <table class="table table-bordered table-form">
+                <tbody>
                 <tr>
                     <td>
-                        {{Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'Name'])}}
+                        {{Form::select('device', $devices)}}
                     </td>
                     <td>
-                        {{Form::text('email', '', ['class' => 'form-control', 'placeholder' => 'Email'])}}
+                        {{Form::text('device_id', '', ['class' => 'form-control', 'placeholder' => 'expiration date'])}}
                     </td>
                     <td>
                         {{Form::submit('Add New', ['class'=>'btn btn-info add-new'])}}
                     </td>
                 </tr>
                 {!! Form::close() !!}
+                </tbody>
             </table>
+
             <table class="table table-bordered table-list">
                 <thead>
                 <tr>
-                    <th>Admin name</th>
-                    <th>Admin email</th>
+                    <th>Device name</th>
+                    <th>Device id</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                @if(count($admins)>0)
-                    @foreach ($admins as $admin )
+                @if(count($userDevices)>0)
+                    @foreach ($userDevices as $device )
                         <tr>
-                            <td><a href="/users/{{$admin->id}}">{{$admin->name}} </a></td>
-                            <td>{{$admin->email}}</td>
+                            <td>{{$device->name}}</td>
+                            <td>{{$device->device_id}}</td>
                             <td>
                                 <a type="button" class="delete" data-toggle="modal" data-target="#deleteModal"
-                                   data-userid={{$admin->id}}><i
-                                        class="material-icons">&#xE872;</i>
-                                </a>
+                                   data-userid={{$device->id}}><i
+                                        class="material-icons">&#xE872;</i></a>
                             </td>
                         </tr>
                     @endforeach
@@ -50,6 +53,5 @@
                 </tbody>
             </table>
         </div>
-        @include("inc.adminModal")
     </div>
 @endsection

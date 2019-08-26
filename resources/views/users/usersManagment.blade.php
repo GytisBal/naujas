@@ -42,7 +42,7 @@
             @if(count($users)>0)
                 @foreach ($users as $user )
                     <tr>
-                        <td>{{$user->name}}</td>
+                        <td><a href="/users/{{$user->id}}/devices">{{$user->name}}</a></td>
                         <td>{{$user->email}}</td>
                         <td>
                             <a type="button" class="delete" data-toggle="modal" data-target="#deleteModal"

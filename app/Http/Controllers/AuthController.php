@@ -41,6 +41,10 @@ class AuthController extends Controller
             'password'=>'required'
         ]);
 
+//        if ($loginData->fails()) {
+//            return response()->json($loginData->messages(), 422);
+//        }
+
         if(! $token = auth('api')->attempt($loginData)){
             return response (['message'=>'Invalid credentials']);
         }
