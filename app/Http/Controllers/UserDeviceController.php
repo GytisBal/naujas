@@ -56,9 +56,11 @@ class UserDeviceController extends Controller
         $devices = Device::all();
         $user=User::find($id);
         $userDevices = $user->devices;
-        $testas = $devices->map(function ($item){
-            return $item->name;
-        });
+//        $testas = $devices->map(function ($item){
+//            return $item->name;
+//        });
+       $testas = $devices->pluck('name', 'device_id');
+
 
 
         return view('inc.deviceManagement')->with(['devices' => $testas,
@@ -102,6 +104,15 @@ class UserDeviceController extends Controller
 
     public function addDevice(Request $request, $id)
     {
-        dd($request->input('device'));
+        $deviceId = $request->input('device');
+        $user = User::find($id);
+        $device = Device::where('device_id', $deviceId)->get();
+        $user->devices()->attach($device);
+        return redirect()->back();
+    }
+
+    public function removeDevice(Request $request, $id)
+    {
+
     }
 }

@@ -53,5 +53,6 @@
                 </tbody>
             </table>
         </div>
+        @include("inc.devicesModal")
     </div>
 @endsection

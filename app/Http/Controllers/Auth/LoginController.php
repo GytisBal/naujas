@@ -50,8 +50,8 @@ class LoginController extends Controller
                 Auth::logout();
                 return view('auth.login');
             }
-         }
-         return view('auth.login');
+        }
+        return view('auth.login');
     }
     public function logout(Request $request)
     {

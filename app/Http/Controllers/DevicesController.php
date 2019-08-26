@@ -74,7 +74,7 @@ class DevicesController extends Controller
             return $item->name;
         });
 
-
+dd($testas);
         return view('inc.deviceManagement')->with(['devices' => $testas,
             'userDevices'=>$userDevices, 'user'=>$user]);
     }
