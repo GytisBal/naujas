@@ -14,9 +14,9 @@ class CreateDeviceUserTable extends Migration
     public function up()
     {
         Schema::create('device_user', function (Blueprint $table) {
-            $table->bigIncrements('id');
             $table->bigInteger('device_id');
             $table->bigInteger('user_id');
+            $table->dateTime('expires_at')->nullable()->default(null);
         });
     }
 

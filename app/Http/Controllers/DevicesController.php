@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Device;
 use App\User;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class DevicesController extends Controller
     {
         $devices = Device::all();
 
-        return view('pages.devices')->with(['devices'=>$devices]);
+        return view('pages.devices')->with(['devices' => $devices]);
     }
 
     /**
@@ -39,50 +40,55 @@ class DevicesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|unique:devices,name',
-            'device_id' => 'required|unique:devices,device_id'
-        ]);
+        $deletedDevice = Device::onlyTrashed()
+            ->where('device_id', $request->input('device_id'));
 
-        $device = new Device;
-        $device->name=$request->input('name');
-        $device->device_id = $request->input('device_id');
-        $device->user_id=auth()->user()->id;
-        $device->active=1;
+        if (count($deletedDevice->get()) > 0) {
+            $getId = $deletedDevice->get()->toArray()[0]['id'];
+            $deletedDevice->restore();
+            $device = Device::find($getId);
+        } else {
+            $request->validate([
+                'name' => 'required|unique:devices,name',
+                'device_id' => 'required|unique:devices,device_id'
+            ]);
+            $device = new Device;
+            $device->name = $request->input('name');
+            $device->device_id = $request->input('device_id');
+        }
+
+        $device->user_id = auth()->user()->id;
+        $device->active = 1;
         $device->save();
 
+        $users = User::whereHas('roles', function ($role) {
+            $role->where('name', 'admin');
+        })->get();
+
+        $device->users()->attach($users);
         return redirect()->back();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $devices = Device::all();
-        $user=User::find($id);
-        $userDevices = $user->devices;
-        $testas = $devices->map(function ($item){
-            return $item->name;
-        });
 
-dd($testas);
-        return view('inc.deviceManagement')->with(['devices' => $testas,
-            'userDevices'=>$userDevices, 'user'=>$user]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -93,8 +99,8 @@ dd($testas);
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -105,19 +111,17 @@ dd($testas);
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
     {
         $id = $request->userId;
         $device = Device::find($id);
+        $users = User::all();
+        $device->users()->detach($users);
         $device->delete();
 
         return redirect()->back();
-    }
-    public function addDevice($deviceName, $userId)
-    {
-        //
     }
 }

@@ -21,10 +21,13 @@ Route::post('users/{user}/createChild', 'UsersController@createChild' )->name('u
 Route::resource('devices', 'DevicesController');
 
 Route::get('users/{user}/devices', 'UserDeviceController@show' )->name('user.devices');
+//Route::resource('users/devices', 'UserDeviceController' )->name('user.devices');
+
 
 Route::post('users/{user}/addDevice', 'UserDeviceController@addDevice' )->name('user.addDevice');
 
-Route::post('testas', 'UserDeviceController@store' );
+Route::delete('users/devices/removeDevice', 'UserDeviceController@removeDevice' )->name('user.removeDevice');
+
 
 Auth::routes();
 

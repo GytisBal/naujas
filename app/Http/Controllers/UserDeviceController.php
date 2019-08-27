@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Device;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class UserDeviceController extends Controller
@@ -98,21 +99,28 @@ class UserDeviceController extends Controller
      */
     public function destroy($id)
     {
-        //
-    }
 
+    }
 
     public function addDevice(Request $request, $id)
     {
+        $expires = Carbon::parse($request->input('date'));
         $deviceId = $request->input('device');
         $user = User::find($id);
         $device = Device::where('device_id', $deviceId)->get();
-        $user->devices()->attach($device);
+        $user->devices()->attach($device, ['expires_at' => $expires]);
+
         return redirect()->back();
     }
 
-    public function removeDevice(Request $request, $id)
+    public function removeDevice(Request $request)
     {
+        $deviceId = $request->deviceId;
+        $userId = $request->user_id;
+        $user = User::find($userId);
+        $device = Device::find($deviceId);
+        $user->devices()->detach($device);
 
+        return redirect()->back();
     }
 }

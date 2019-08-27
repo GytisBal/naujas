@@ -88,10 +88,10 @@ class UsersController extends Controller
         $user->name = $request->input('name');
         $user->save();
 
-        $device = \App\Device::find(1);
+        $devices = \App\Device::all();
         if ($user->devices->count() <= 0) {
 
-            $user->devices()->attach($device);
+            $user->devices()->attach($devices);
         }
 
         \Mail::to($user)->send(new Welcome($user, $password));
@@ -196,12 +196,6 @@ class UsersController extends Controller
         $user->parent_id = $id;
         $user->auth_key = '0';
         $user->save();
-
-        $device = \App\Device::find(1);
-
-        if ($user->devices->count() <= 0) {
-            $user->devices()->attach($device);
-        }
 
         \Mail::to($user)->send(new Welcome($user, $password));
 

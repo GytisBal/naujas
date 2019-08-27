@@ -4,15 +4,15 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Delete admin</h4>
+                <h4 class="modal-title">Delete device</h4>
             </div>
             <div class="modal-body">
-                <p>Are you sure, you want to delete admin and all his added users ?</p>
+                <p>Are you sure, you want to delete device</p>
             </div>
             <div class="modal-footer">
-                {!!Form::open(['action' => ['UsersController@destroy', "test" ], 'method' => 'POST'])!!}
+                {!!Form::open(['route' => ['user.removeDevice', 'user_id'=>$user->id ], 'method' => 'POST'])!!}
                 {{Form::hidden('_method', 'DELETE')}}
-                {{Form::hidden('userId', '', ['id' => 'userId'])}}
+                {{Form::hidden('deviceId', '', ['id' => 'deviceId'])}}
                 {{ Form::button('<a  class="btn btn-primary"  data-dismiss="modal">No, Close</a>', ['type' => 'button'] )  }}
                 {{ Form::button('<a  class="btn btn-danger" >Yes, Delete</a>', ['type' => 'submit'] )  }}
                 {!!Form::close()!!}
@@ -24,13 +24,13 @@
     <script>
         $('#deleteModal').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget) // Button that triggered the modal
-            const recipient = button.data('userid')
+            const recipient = button.data('device')
 
             console.log(recipient);
 
             const modal = $(this)
 
-            modal.find('.modal-footer #userId').val(recipient)
+            modal.find('.modal-footer #deviceId').val(recipient)
         })
     </script>
 </div>

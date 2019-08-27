@@ -19,8 +19,8 @@ class CreateDevicesTable extends Migration
             $table->string('device_id', '255');
             $table->bigInteger('user_id');
             $table->boolean('active');
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 
