@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -12,9 +13,19 @@ class RelayController extends Controller
     public function status(Request $request)
     {
         $token = auth()->tokenById($request->user()->id);
-        $id = $request->input('id');
-        $device = $request->user()->devices->find($id);
-        $device_id = $device->device_id;
+//        $id = $request->input('id');
+//        $device = $request->user()->devices->find($id);
+//
+//        $device_id = $device->device_id;
+        $user = $request->user();
+        dd($user->devices);
+        $currentDate = Carbon::now();
+        foreach ($user->devices as $device) {
+            if($device->pivot->expires_at !== null && $currentDate > $device->pivot->expires_at){
+                $user->devices()->detach($device);
+            }
+        }
+//        dd($user->devices->pivot);
 
         if($request->user()->hasRole('admin')) {
             $auth_key = $request->user()->auth_key;

@@ -10,6 +10,6 @@ class Device extends Model
     use SoftDeletes;
 
     public function users(){
-        return $this->belongsToMany('App\User');
+        return $this->belongsToMany('App\User')->withPivot('expires_at');
     }
 }

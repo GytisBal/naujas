@@ -61,6 +61,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function devices(){
-        return $this->belongsToMany('App\Device');
+        return $this->belongsToMany('App\Device')->withPivot('expires_at');
     }
 }
