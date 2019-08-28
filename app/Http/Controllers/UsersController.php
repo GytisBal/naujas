@@ -25,17 +25,12 @@ class UsersController extends Controller
     public function index()
     {
         $admin_id = auth()->user()->id;
-
         $admin = User::find($admin_id);
-
         $users = User::where('parent_id', $admin_id)->get();
 
         if ($admin->hasRole('super-admin')) {
-
             return view('users.adminsManagment')->with(['admins' => $users]);
-
         } else if ($admin->hasRole('admin')) {
-
             return view('users.usersManagment')->with(['users' => $users, 'admin' => $admin]);
         }
     }
