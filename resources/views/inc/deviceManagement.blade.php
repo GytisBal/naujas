@@ -20,7 +20,7 @@
                     <td>
                         <div class="input-group date" data-provide="datepicker">
 {{--                            {{Form::text('date',['class'=>'form-control'])}}--}}
-                            <input name="date" type="text" class="form-control"
+                            <input name="date" autocomplete="off" type="text" class="form-control"
                                    placeholder="Expiration date">
                             <div class="input-group-addon">
                                 <span class="glyphicon glyphicon-th"></span>

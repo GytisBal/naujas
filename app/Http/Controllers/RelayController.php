@@ -18,51 +18,61 @@ class RelayController extends Controller
 //
 //        $device_id = $device->device_id;
         $user = $request->user();
-        dd($user->devices);
         $currentDate = Carbon::now();
+
         foreach ($user->devices as $device) {
-            if($device->pivot->expires_at !== null && $currentDate > $device->pivot->expires_at){
+            if ($device->pivot->expires_at !== null && $currentDate > $device->pivot->expires_at) {
                 $user->devices()->detach($device);
             }
         }
-//        dd($user->devices->pivot);
+        $getValues = $user->devices->map(function ($item) {
+            return $item->only('device_id', 'channel');
 
-        if($request->user()->hasRole('admin')) {
+        });
+        $setToObject = $getValues->map(function ($item, $key) {
+            $item['id'] = $item['device_id'];
+            unset($item['device_id']);
+            return (object)$item;
+        });
+        $values = $setToObject->toArray();
+
+        if ($request->user()->hasRole('admin')) {
             $auth_key = $request->user()->auth_key;
-        }else{
+        } else {
             $parent_id = $request->user()->parent_id;
             $auth_key = User::find($parent_id)->auth_key;
         }
 
-         if (!empty($device_id) && !empty($auth_key)){
-             $params = [
-                 'auth_key' => $auth_key,
-                 'id' => $device_id,
-                 'channel' => 0];
+        return json_encode(['status' => 'status', 'accessToken' => $token, 'devices'=>$user->devices]);
 
-             $defaults = array(
-                 CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/status",
-                 CURLOPT_POST => true,
-                 CURLOPT_POSTFIELDS => $params,
-                 CURLOPT_RETURNTRANSFER => true,
-             );
-
-             $ch = curl_init();
-             curl_setopt_array($ch, $defaults);
-             $response = curl_exec($ch);
-             $err = curl_error($ch);
-             curl_close($ch);
-             $result = json_decode($response, true);
-            $object = Arr::get($result, 'data.device_status.relays.0.ison');
-
-             if ($err) {
-                 echo $err;
-             }
-             return json_encode(['status' => $object, 'accessToken'=>$token]);
-        }else
-            {
-                return response (['message'=>'Bad Auth_Key or device_id']);
-         }
+//        if (!empty($device_id) && !empty($auth_key)) {
+//            $params = [
+//                'auth_key' => $auth_key,
+//                'id' => $device_id,
+//                'channel' => 0];
+//
+//            $defaults = array(
+//                CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/status",
+//                CURLOPT_POST => true,
+//                CURLOPT_POSTFIELDS => $params,
+//                CURLOPT_RETURNTRANSFER => true,
+//            );
+//
+//            $ch = curl_init();
+//            curl_setopt_array($ch, $defaults);
+//            $response = curl_exec($ch);
+//            $err = curl_error($ch);
+//            curl_close($ch);
+//            $result = json_decode($response, true);
+//            $status = Arr::get($result, 'data.device_status.relays.0.ison');
+//
+//            if ($err) {
+//                echo $err;
+//            }
+//            return json_encode(['status' => $status, 'accessToken' => $token]);
+//        } else {
+//            return response(['message' => 'Bad Auth_Key or device_id']);
+//        }
     }
 
     public function control(Request $request)
@@ -74,19 +84,19 @@ class RelayController extends Controller
         $device_id = $device->device_id;
         $status = json_decode($this->status($request))->status;
 
-        if($request->user()->hasRole('admin')) {
+        if ($request->user()->hasRole('admin')) {
             $auth_key = $request->user()->auth_key;
-        }else{
+        } else {
             $parent_id = $request->user()->parent_id;
             $auth_key = User::find($parent_id)->auth_key;
         }
-        if (!empty($device_id) && !empty($auth_key)){
-        if ($status === true) {
-            $turn = 'off';
-        } else {
-            $turn = 'on';
-        }
-        sleep(2);
+        if (!empty($device_id) && !empty($auth_key)) {
+            if ($status === true) {
+                $turn = 'off';
+            } else {
+                $turn = 'on';
+            }
+            sleep(2);
 
             $params = [
                 'auth_key' => $auth_key,
@@ -111,9 +121,9 @@ class RelayController extends Controller
                 echo $err;
             }
 
-            return response(['turn' => $turn, 'accessToken'=>$token]);
-        }else{
-            return response (['message'=>'Bad Auth_Key or device_id']);
+            return response(['turn' => $turn, 'accessToken' => $token]);
+        } else {
+            return response(['message' => 'Bad Auth_Key or device_id']);
         }
 
     }

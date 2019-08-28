@@ -17,6 +17,7 @@ class CreateDevicesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name', '255');
             $table->string('device_id', '255');
+            $table->bigInteger('channel')->default(0);
             $table->bigInteger('user_id');
             $table->boolean('active');
             $table->softDeletes();
