@@ -23,6 +23,33 @@
   cursor: pointer;
 }
 
+.usersManagement .device-form {
+  height: 34px;
+  margin-bottom: 2rem;
+}
+
+.usersManagement .device-form form {
+  height: 100%;
+}
+
+.usersManagement .device-form select {
+  float: left;
+  height: 100%;
+  min-width: 13rem;
+  background-color: white;
+  margin-right: 1rem;
+}
+
+.usersManagement .device-form .date {
+  width: 220px;
+  float: left;
+  margin-right: 1rem;
+}
+
+.usersManagement .device-form .add-new {
+  float: none;
+}
+
 .modal-title {
   text-transform: uppercase;
 }

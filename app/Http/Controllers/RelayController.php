@@ -13,10 +13,6 @@ class RelayController extends Controller
     public function status(Request $request)
     {
         $token = auth()->tokenById($request->user()->id);
-//        $id = $request->input('id');
-//        $device = $request->user()->devices->find($id);
-//
-//        $device_id = $device->device_id;
         $user = $request->user();
         $currentDate = Carbon::now();
 
@@ -25,16 +21,6 @@ class RelayController extends Controller
                 $user->devices()->detach($device);
             }
         }
-//        $getValues = $user->devices->map(function ($item) {
-//            return $item->only('device_id', 'channel');
-//
-//        });
-//        $setToObject = $getValues->map(function ($item, $key) {
-//            $item['id'] = $item['device_id'];
-//            unset($item['device_id']);
-//            return (object)$item;
-//        });
-//        $values = $setToObject->toArray();
 
         if ($request->user()->hasRole('admin')) {
             $auth_key = $request->user()->auth_key;
@@ -42,8 +28,6 @@ class RelayController extends Controller
             $parent_id = $request->user()->parent_id;
             $auth_key = User::find($parent_id)->auth_key;
         }
-
-//        return json_encode(['status' => 'status', 'accessToken' => $token, 'devices'=>$user->devices]);
 
         if (!empty($auth_key)) {
             $params = [
@@ -64,12 +48,12 @@ class RelayController extends Controller
             $result = json_decode($response, true);
 
             $devices = [];
+
             foreach ($user->devices->toArray() as $item) {
-                $id = strtolower($item['device_id']);
-                $status = Arr::get($result, 'data.devices_status.' . $id . '.relays.0.ison');
+                $device_id = strtolower($item['device_id']);
+                $status = Arr::get($result, 'data.devices_status.' . $device_id . '.relays.0.ison');
                 $addStatusToDevice = Arr::add($item, 'status', $status);
                 array_push($devices, $addStatusToDevice);
-
             }
 
             if ($err) {
@@ -86,13 +70,9 @@ class RelayController extends Controller
 
         $token = auth()->tokenById($request->user()->id);
         $device_id = $request->input('device_id');
-
-//        $device = $request->user()->devices->find($id);
-//        $device_id = $device->device_id;
-//        dd(json_decode($this->status($request))->devices);
         $devices = json_decode($this->status($request))->devices;
-        $devicesCollection = collect($devices);
-      $device =  $devicesCollection->where('device_id', "7AE9D2")->all();
+        $device = collect($devices)->where('device_id', $device_id)->all();
+        $channel = $device[0]->channel;
         $status = $device[0]->status;
 
         if ($request->user()->hasRole('admin')) {
@@ -114,7 +94,7 @@ class RelayController extends Controller
                 'auth_key' => $auth_key,
                 'id' => $device_id,
                 'turn' => $turn,
-                'channel' => 0];
+                'channel' => $channel];
 
             $defaults = array(
                 CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/relay/control/",

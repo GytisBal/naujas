@@ -15,101 +15,40 @@ class UserDeviceController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
-
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        dd($request);
-    }
-
-    /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $devices = Device::all();
-        $user=User::find($id);
+        $user = User::find($id);
         $userDevices = $user->devices;
-//        $testas = $devices->map(function ($item){
-//            return $item->name;
-//        });
-       $testas = $devices->pluck('name', 'device_id');
+        $devices = $devices->pluck('name', 'device_id');
 
 
-
-        return view('inc.deviceManagement')->with(['devices' => $testas,
-            'userDevices'=>$userDevices, 'user'=>$user]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-
+        return view('inc.deviceManagement')->with(['devices' => $devices,
+            'userDevices' => $userDevices, 'user' => $user]);
     }
 
     public function addDevice(Request $request, $id)
     {
-        $expires = Carbon::parse($request->input('date'));
+        if ($request->input('date') === null) {
+            $expires = $request->input('date');
+        } else {
+            $expires = Carbon::parse($request->input('date'))->toDateString();
+        }
         $deviceId = $request->input('device');
         $user = User::find($id);
         $device = Device::where('device_id', $deviceId)->get();
-        $user->devices()->attach($device, ['expires_at' => $expires]);
 
+        foreach ($user->devices as $device) {
+            if (collect($device)->contains($deviceId) === true) {
+                $user->devices()->detach($device);
+            }
+        }
+        $user->devices()->attach($device, ['expires_at' => $expires]);
         return redirect()->back();
     }
 

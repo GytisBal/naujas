@@ -43,7 +43,7 @@
                             <td>{{$device->device_id}}</td>
                             <td>
                                 <a type="button" class="delete" data-toggle="modal" data-target="#deleteModal"
-                                   data-userid={{$device->id}}><i
+                                   data-device={{$device->id}}><i
                                         class="material-icons">&#xE872;</i></a>
                             </td>
                         </tr>

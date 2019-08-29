@@ -58,10 +58,9 @@ class DevicesController extends Controller
                 'device_id' => 'required|unique:devices,device_id'
             ]);
             $device = new Device;
-            $device->name = $request->input('name');
             $device->device_id = $request->input('device_id');
         }
-
+        $device->name = $request->input('name');
         $device->user_id = auth()->user()->id;
         $device->active = 1;
         $device->save();
@@ -116,7 +115,7 @@ class DevicesController extends Controller
      */
     public function destroy(Request $request)
     {
-        $id = $request->userId;
+        $id = $request->deviceId;
         $device = Device::find($id);
         $users = User::all();
         $device->users()->detach($users);

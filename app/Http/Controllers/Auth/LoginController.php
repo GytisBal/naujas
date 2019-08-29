@@ -39,7 +39,6 @@ class LoginController extends Controller
 //             auth()->user()->givePermissionTo($permission);
 
             $user_id = auth()->user()->id;
-
             $user = User::find($user_id);
 
             if($user->hasRole('super-admin')||$user->hasRole('admin'))

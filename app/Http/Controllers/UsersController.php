@@ -103,7 +103,6 @@ class UsersController extends Controller
     public function show($id)
     {
         $admin = User::find($id);
-
         $users = User::where('parent_id', $id)->get();
 
         return view('users.usersManagment')->with(['users' => $users, 'admin' => $admin]);
@@ -143,10 +142,9 @@ class UsersController extends Controller
         $id = $request->userId;
         $user = User::find($id);
         $userChild = User::where('parent_id', $id);
-
         $devices = \App\Device::all();
 
-        if($user->hasRole('admin')){
+        if ($user->hasRole('admin')) {
             $user->removeRole('admin');
             $user->revokePermissionTo('create-users');
         }
@@ -185,7 +183,6 @@ class UsersController extends Controller
         }
 
         $password = Str::random(8);
-
         $user->name = $request->input('name');
         $user->password = Hash::make($password);
         $user->parent_id = $id;
