@@ -34,20 +34,24 @@ class UserDeviceController extends Controller
 
     public function addDevice(Request $request, $id)
     {
+
         if ($request->input('date') === null) {
             $expires = $request->input('date');
         } else {
             $expires = Carbon::parse($request->input('date'))->toDateString();
         }
         $deviceId = $request->input('device');
+
         $user = User::find($id);
         $device = Device::where('device_id', $deviceId)->get();
+        $devices = $user->devices;
 
-        foreach ($user->devices as $device) {
-            if (collect($device)->contains($deviceId) === true) {
-                $user->devices()->detach($device);
+        foreach ($devices as $item) {
+            if (collect($item)->contains($deviceId) === true) {
+                $user->devices()->detach($item);
             }
         }
+
         $user->devices()->attach($device, ['expires_at' => $expires]);
         return redirect()->back();
     }

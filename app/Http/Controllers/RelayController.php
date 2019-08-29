@@ -13,14 +13,15 @@ class RelayController extends Controller
     public function status(Request $request)
     {
         $token = auth()->tokenById($request->user()->id);
-        $user = $request->user();
         $currentDate = Carbon::now();
 
-        foreach ($user->devices as $device) {
+        foreach ($request->user()->devices as $device) {
             if ($device->pivot->expires_at !== null && $currentDate > $device->pivot->expires_at) {
-                $user->devices()->detach($device);
+                $request->user()->devices()->detach($device);
             }
         }
+
+        $user = User::find($request->user()->id);
 
         if ($request->user()->hasRole('admin')) {
             $auth_key = $request->user()->auth_key;
@@ -72,51 +73,69 @@ class RelayController extends Controller
         $device_id = $request->input('device_id');
         $devices = json_decode($this->status($request))->devices;
         $device = collect($devices)->where('device_id', $device_id)->all();
-        $channel = $device[0]->channel;
-        $status = $device[0]->status;
 
-        if ($request->user()->hasRole('admin')) {
-            $auth_key = $request->user()->auth_key;
+        if (count($device) <= 0) {
+            return response(['devices' => $devices, 'accessToken' => $token]);
         } else {
-            $parent_id = $request->user()->parent_id;
-            $auth_key = User::find($parent_id)->auth_key;
-        }
+            $channel = $device[0]->channel;
+            $status = $device[0]->status;
 
-        if (!empty($auth_key)) {
-            if ($status === true) {
-                $turn = 'off';
+            if ($request->user()->hasRole('admin')) {
+                $auth_key = $request->user()->auth_key;
             } else {
-                $turn = 'on';
-            }
-            sleep(2);
-
-            $params = [
-                'auth_key' => $auth_key,
-                'id' => $device_id,
-                'turn' => $turn,
-                'channel' => $channel];
-
-            $defaults = array(
-                CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/relay/control/",
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => $params,
-                CURLOPT_RETURNTRANSFER => true,
-            );
-
-            $ch = curl_init();
-            curl_setopt_array($ch, $defaults);
-            curl_exec($ch);
-            $err = curl_error($ch);
-            curl_close($ch);
-
-            if ($err) {
-                echo $err;
+                $parent_id = $request->user()->parent_id;
+                $auth_key = User::find($parent_id)->auth_key;
             }
 
-            return response(['turn' => $turn, 'accessToken' => $token]);
-        } else {
-            return response(['message' => 'Bad Auth_Key or device_id']);
+            if (!empty($auth_key)) {
+                $newDevices = collect($devices)->map(function ($item) use ($device_id) {
+                    if ($item->device_id === $device_id) {
+                        if ($item->status === true) {
+                            $turn = 'off';
+                        } else {
+                            $turn = 'on';
+                        }
+                       return collect($item)->put('turn', $turn);
+                    }else{
+                        return $item;
+                    }
+                });
+
+                if ($status === true) {
+                    $turn = 'off';
+                } else {
+                    $turn = 'on';
+                }
+
+                sleep(2);
+
+                $params = [
+                    'auth_key' => $auth_key,
+                    'id' => $device_id,
+                    'turn' => $turn,
+                    'channel' => $channel];
+
+                $defaults = array(
+                    CURLOPT_URL => "https://shelly-1-eu.shelly.cloud/device/relay/control/",
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => $params,
+                    CURLOPT_RETURNTRANSFER => true,
+                );
+
+                $ch = curl_init();
+                curl_setopt_array($ch, $defaults);
+                curl_exec($ch);
+                $err = curl_error($ch);
+                curl_close($ch);
+
+                if ($err) {
+                    echo $err;
+                }
+
+                return response(['turn' => $turn, 'devices' => $newDevices, 'accessToken' => $token]);
+            } else {
+                return response(['message' => 'Bad Auth_Key or device_id']);
+            }
         }
-
     }
 }
