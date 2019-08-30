@@ -13,7 +13,7 @@ class RelayController extends Controller
     public function status(Request $request)
     {
         $token = auth()->tokenById($request->user()->id);
-        $currentDate = Carbon::now();
+        $currentDate = Carbon::now()->toDateString();
 
         foreach ($request->user()->devices as $device) {
             if ($device->pivot->expires_at !== null && $currentDate > $device->pivot->expires_at) {
@@ -29,6 +29,8 @@ class RelayController extends Controller
             $parent_id = $request->user()->parent_id;
             $auth_key = User::find($parent_id)->auth_key;
         }
+
+        sleep(1);
 
         if (!empty($auth_key)) {
             $params = [
@@ -77,8 +79,8 @@ class RelayController extends Controller
         if (count($device) <= 0) {
             return response(['devices' => $devices, 'accessToken' => $token]);
         } else {
-            $channel = $device[0]->channel;
-            $status = $device[0]->status;
+            $channel = collect($device)->pluck('channel')[0];
+            $status = collect($device)->pluck('status')[0];
 
             if ($request->user()->hasRole('admin')) {
                 $auth_key = $request->user()->auth_key;
@@ -95,8 +97,8 @@ class RelayController extends Controller
                         } else {
                             $turn = 'on';
                         }
-                       return collect($item)->put('turn', $turn);
-                    }else{
+                        return collect($item)->put('turn', $turn);
+                    } else {
                         return $item;
                     }
                 });
@@ -107,7 +109,7 @@ class RelayController extends Controller
                     $turn = 'on';
                 }
 
-                sleep(2);
+                usleep(1800000);
 
                 $params = [
                     'auth_key' => $auth_key,
@@ -131,7 +133,6 @@ class RelayController extends Controller
                 if ($err) {
                     echo $err;
                 }
-
                 return response(['turn' => $turn, 'devices' => $newDevices, 'accessToken' => $token]);
             } else {
                 return response(['message' => 'Bad Auth_Key or device_id']);

@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('content')
-    <a href="{{ url()->previous() }}" class="btn btn-default">Go Back</a>
+    <a href="/users/{{$user->parent_id}}" class="btn btn-default">Go Back</a>
     <div class="container col-lg-9 usersManagement">
         <div class="row">
             <div>
