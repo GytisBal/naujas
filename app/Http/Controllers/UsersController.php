@@ -24,14 +24,15 @@ class UsersController extends Controller
 
     public function index()
     {
-        $admin_id = auth()->user()->id;
-        $admin = User::find($admin_id);
-        $users = User::where('parent_id', $admin_id)->get();
 
-        if ($admin->hasRole('super-admin')) {
-            return view('users.adminsManagment')->with(['admins' => $users]);
-        } else if ($admin->hasRole('admin')) {
-            return view('users.usersManagment')->with(['users' => $users, 'admin' => $admin]);
+        $user_id = auth()->user()->id;
+        $user = User::find($user_id);
+        $users = User::where('parent_id', $user_id)->get();
+
+        if ($user->hasRole('super-admin')) {
+            return view('users.usersManagment')->with(['users' => $users, 'user' => $user]);
+        } else if ($user->hasRole('admin')) {
+            return view('users.usersManagment')->with(['users' => $users, 'user' => $user]);
         }
     }
 
@@ -102,10 +103,10 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $admin = User::find($id);
+        $user = User::find($id);
         $users = User::where('parent_id', $id)->get();
 
-        return view('users.usersManagment')->with(['users' => $users, 'admin' => $admin]);
+        return view('users.usersManagment')->with(['users' => $users, 'user' => $user]);
     }
 
     /**
