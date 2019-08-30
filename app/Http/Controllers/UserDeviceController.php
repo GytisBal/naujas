@@ -58,7 +58,7 @@ class UserDeviceController extends Controller
 
     public function removeDevice(Request $request)
     {
-        $deviceId = $request->deviceId;
+        $deviceId = $request->id;
         $userId = $request->user_id;
         $user = User::find($userId);
         $device = Device::find($deviceId);

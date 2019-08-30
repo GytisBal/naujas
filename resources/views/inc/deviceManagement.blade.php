@@ -47,7 +47,7 @@
                             @endif
                             <td>
                                 <a type="button" class="delete" data-toggle="modal" data-target="#deleteModal"
-                                   data-device={{$device->id}}><i
+                                   data-id={{$device->id}}><i
                                         class="material-icons">&#xE872;</i></a>
                             </td>
                         </tr>
@@ -56,6 +56,6 @@
                 </tbody>
             </table>
         </div>
-        @include("inc.userDeviceModal")
+        @include("inc.modal")
     </div>
 @endsection

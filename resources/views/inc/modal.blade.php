@@ -13,9 +13,14 @@
             </div>
 
             <div class="modal-footer">
+                @if($user->hasRole('admin') || $user->hasRole('super-admin') )
+                    {!!Form::open(['action' => ['UsersController@destroy', "delete"], 'method' => 'POST'])!!}
+                    @else
+                    {!!Form::open(['route' => ['user.removeDevice', 'user_id'=>$user->id ], 'method' => 'POST'])!!}
+                    @endif
                 {!!Form::open(['action' => ['UsersController@destroy', "delete"], 'method' => 'POST'])!!}
                 {{Form::hidden('_method', 'DELETE')}}
-                {{Form::hidden('userId', '', ['id' => 'userId'])}}
+                {{Form::hidden('id', '', ['id' => 'id'])}}
                 {{ Form::button('<a  class="btn btn-primary"  data-dismiss="modal">No, Close</a>', ['type' => 'button'] )  }}
                 {{ Form::button('<a  class="btn btn-danger" >Yes, Delete</a>', ['type' => 'submit'] )  }}
                 {!!Form::close()!!}
@@ -28,13 +33,10 @@
     <script>
         $('#deleteModal').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget) // Button that triggered the modal
-            const recipient = button.data('userid')
-
+            const recipient = button.data('id')
             console.log(recipient);
-
             const modal = $(this)
-
-            modal.find('.modal-footer #userId').val(recipient)
+            modal.find('.modal-footer #id').val(recipient)
         })
     </script>
 </div>

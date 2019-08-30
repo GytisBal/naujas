@@ -24,7 +24,6 @@ class UsersController extends Controller
 
     public function index()
     {
-
         $user_id = auth()->user()->id;
         $user = User::find($user_id);
         $users = User::where('parent_id', $user_id)->get();
@@ -140,7 +139,7 @@ class UsersController extends Controller
      */
     public function destroy(Request $request)
     {
-        $id = $request->userId;
+        $id = $request->id;
         $user = User::find($id);
         $userChild = User::where('parent_id', $id);
         $devices = \App\Device::all();

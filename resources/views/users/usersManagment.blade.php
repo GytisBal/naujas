@@ -64,7 +64,7 @@
                                 <td>{{$user->email}}</td>
                                 <td>
                                     <a type="button" class="delete" data-toggle="modal" data-target="#deleteModal"
-                                       data-userid={{$user->id}}><i
+                                       data-id={{$user->id}}><i
                                             class="material-icons">&#xE872;</i></a>
                                 </td>
                             </tr>
