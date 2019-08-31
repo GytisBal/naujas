@@ -115,7 +115,7 @@ class DevicesController extends Controller
      */
     public function destroy(Request $request)
     {
-        $id = $request->deviceId;
+        $id = $request->id;
         $device = Device::find($id);
         $users = User::all();
         $device->users()->detach($users);

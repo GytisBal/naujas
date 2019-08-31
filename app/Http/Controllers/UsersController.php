@@ -29,9 +29,9 @@ class UsersController extends Controller
         $users = User::where('parent_id', $user_id)->get();
 
         if ($user->hasRole('super-admin')) {
-            return view('users.usersManagment')->with(['users' => $users, 'user' => $user]);
+            return view('pages.usersManagment')->with(['users' => $users, 'user' => $user]);
         } else if ($user->hasRole('admin')) {
-            return view('users.usersManagment')->with(['users' => $users, 'user' => $user]);
+            return view('pages.usersManagment')->with(['users' => $users, 'user' => $user]);
         }
     }
 
@@ -105,7 +105,7 @@ class UsersController extends Controller
         $user = User::find($id);
         $users = User::where('parent_id', $id)->get();
 
-        return view('users.usersManagment')->with(['users' => $users, 'user' => $user]);
+        return view('pages.usersManagment')->with(['users' => $users, 'user' => $user]);
     }
 
     /**

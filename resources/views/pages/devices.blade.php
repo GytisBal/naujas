@@ -7,6 +7,7 @@
                 @include('inc.messages')
             </div>
             <div class="col-sm-8">
+                @include("inc.modal")
                 <h2 class="header">Devices Management</h2>
             </div>
             {!! Form::open(['route' => ['devices.store'], 'method' => 'POST']) !!}
@@ -43,7 +44,7 @@
                             <td>{{$device->device_id}}</td>
                             <td>
                                 <a type="button" class="delete" data-toggle="modal" data-target="#deleteModal"
-                                   data-device={{$device->id}}><i
+                                   data-id={{$device->id}}><i
                                         class="material-icons">&#xE872;</i></a>
                             </td>
                         </tr>
@@ -51,7 +52,6 @@
                 @endif
                 </tbody>
             </table>
-            @include("inc.devicesModal")
         </div>
     </div>
 @endsection
