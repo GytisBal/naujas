@@ -38,7 +38,7 @@ class RefreshToken
             {
                 $refreshed = JWTAuth::refresh(JWTAuth::getToken());
                 $user = JWTAuth::setToken($refreshed)->toUser();
-                $next($request)->header('Authorization: Bearer ' . $refreshed);
+                $next($request)->header('Authorization: Bearer ', $refreshed);
             }
             catch (JWTException $e)
             {
@@ -63,7 +63,4 @@ class RefreshToken
 
     }
 
-    private function setAuthenticationHeader($param, $refreshed)
-    {
-    }
 }

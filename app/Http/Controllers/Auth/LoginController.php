@@ -40,7 +40,6 @@ class LoginController extends Controller
 
             $user_id = auth()->user()->id;
             $user = User::find($user_id);
-
             if($user->hasRole('super-admin')||$user->hasRole('admin'))
             {
                 return redirect('users');

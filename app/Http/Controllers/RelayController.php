@@ -71,9 +71,11 @@ class RelayController extends Controller
     public function control(Request $request)
     {
 
-        $token = auth()->tokenById($request->user()->id);
+        $statusResponse = json_decode($this->status($request));
+        $token=$statusResponse->accessToken;
+        $devices = $statusResponse->devices;
         $device_id = $request->input('device_id');
-        $devices = json_decode($this->status($request))->devices;
+
         $device = collect($devices)->where('device_id', $device_id)->all();
 
         if (count($device) <= 0) {
@@ -93,9 +95,9 @@ class RelayController extends Controller
                 $newDevices = collect($devices)->map(function ($item) use ($device_id) {
                     if ($item->device_id === $device_id) {
                         if ($item->status === true) {
-                            $turn = 'off';
+                            $turn = false;
                         } else {
-                            $turn = 'on';
+                            $turn = true;
                         }
                         return collect($item)->put('turn', $turn);
                     } else {
@@ -133,7 +135,7 @@ class RelayController extends Controller
                 if ($err) {
                     echo $err;
                 }
-                return response(['turn' => $turn, 'devices' => $newDevices, 'accessToken' => $token]);
+                return response(['devices' => $newDevices, 'accessToken' => $token]);
             } else {
                 return response(['message' => 'Bad Auth_Key or device_id']);
             }

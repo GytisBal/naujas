@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['middleware' => ["refresh.token", 'auth:api']], function () {
+Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/controlRelay', 'RelayController@control');
-    Route::post('/statusRelay', 'RelayController@status');
+    Route::post('/statusRelay', 'RelayController@status')->middleware(["refresh.token"]);
 });
 
 Route::post('/register', 'AuthController@register');

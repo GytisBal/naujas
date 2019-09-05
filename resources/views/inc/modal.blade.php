@@ -36,12 +36,12 @@
 @endisset
 <div class="modal-footer">
     @isset($user)
-    @if($user->hasRole('admin') || $user->hasRole('super-admin') )
-        {!!Form::open(['action' => ['UsersController@destroy', "delete"], 'method' => 'POST'])!!}
-    @else
-        {!!Form::open(['route' => ['user.removeDevice', 'user_id'=>$user->id ], 'method' => 'POST'])!!}
-    @endif
+        @if($user->hasRole('admin') || $user->hasRole('super-admin') )
+            {!!Form::open(['action' => ['UsersController@destroy', "delete"], 'method' => 'POST'])!!}
         @else
+            {!!Form::open(['route' => ['user.removeDevice', 'user_id'=>$user->id ], 'method' => 'POST'])!!}
+        @endif
+    @else
         {!!Form::open(['action' => ['DevicesController@destroy', "delete" ], 'method' => 'POST'])!!}
     @endisset
     {!!Form::open(['action' => ['UsersController@destroy', "delete"], 'method' => 'POST'])!!}
