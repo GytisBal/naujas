@@ -20,6 +20,7 @@ class CreateDevicesTable extends Migration
             $table->bigInteger('channel')->default(0);
             $table->bigInteger('user_id');
             $table->boolean('active');
+            $table->string('type', '255');
             $table->softDeletes();
             $table->timestamps();
         });

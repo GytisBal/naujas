@@ -23,8 +23,9 @@ class DevicesController extends Controller
     public function index()
     {
         $devices = Device::all();
+        $types = Device:: TYPES;
 
-        return view('pages.devices')->with(['devices' => $devices]);
+        return view('pages.devices')->with(['devices' => $devices, 'types'=>$types]);
     }
 
     /**
@@ -60,6 +61,7 @@ class DevicesController extends Controller
             $device = new Device;
             $device->device_id = $request->input('device_id');
         }
+        $device->type = $request->input('type');
         $device->name = $request->input('name');
         $device->user_id = auth()->user()->id;
         $device->active = 1;

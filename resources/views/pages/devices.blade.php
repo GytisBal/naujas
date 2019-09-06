@@ -15,6 +15,9 @@
                 <tbody>
                 <tr>
                     <td>
+                    {{Form::select('type', $types)}}
+                    </td>
+                    <td>
                         {{Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'Name'])}}
                     </td>
                     <td>
@@ -31,6 +34,7 @@
             <table class="table table-bordered table-list">
                 <thead>
                 <tr>
+                    <th>Device type</th>
                     <th>Device name</th>
                     <th>Device id</th>
                     <th>Actions</th>
@@ -40,6 +44,7 @@
                 @if(count($devices)>0)
                     @foreach ($devices as $device )
                         <tr>
+                            <td>{{$device->type}}</td>
                             <td>{{$device->name}}</td>
                             <td>{{$device->device_id}}</td>
                             <td>

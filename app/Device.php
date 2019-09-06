@@ -9,7 +9,14 @@ class Device extends Model
 {
     use SoftDeletes;
 
-    public function users(){
+    public function users()
+    {
         return $this->belongsToMany('App\User')->withPivot('expires_at');
     }
+
+    const TYPES = [
+        'vartai' => 'Vartai',
+        'lempos' => 'Lempos',
+        'kiti' => 'Kiti',
+    ];
 }
